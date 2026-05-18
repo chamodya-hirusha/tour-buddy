@@ -13,6 +13,7 @@ import Link from "next/link";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { fetchPackageBySlug } from "@/lib/api";
+import { getVehicleBySlug } from "@/lib/vehicles";
 import { packageImage } from "@/lib/packages";
 import { useAuth } from "@/lib/auth";
 
@@ -24,6 +25,8 @@ function CheckoutInner() {
   const router = useRouter();
   const params = useSearchParams();
   const slug = params.get("package") ?? "";
+  const vehicleSlug = params.get("vehicle") ?? "";
+  const daysParam = params.get("days") ?? "1";
   const { user, loading: authLoading } = useAuth();
 
   const [step, setStep] = useState<Step>(0);
@@ -44,6 +47,8 @@ function CheckoutInner() {
     enabled: !!slug,
   });
 
+  const vehicle = vehicleSlug ? getVehicleBySlug(vehicleSlug) : null;
+
   // Pre-fill user info
   useEffect(() => {
     if (user) {
@@ -61,7 +66,11 @@ function CheckoutInner() {
     }
   }, [authLoading, user, router, slug]);
 
-  const total = pkg ? Number(pkg.price_usd) * travelers : 0;
+  const total = pkg 
+    ? Number(pkg.price_usd) * travelers 
+    : vehicle 
+      ? vehicle.price_per_day * Number(daysParam) 
+      : 0;
   const deposit = total * 0.3;
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -90,10 +99,10 @@ function CheckoutInner() {
     );
   }
 
-  if (!pkg) {
+  if (!pkg && !vehicle) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4">
-        <p className="text-grey-soft">Package not found.</p>
+        <p className="text-grey-soft">Item not found.</p>
         <Link href="/packages" className="btn-gold">Browse Packages</Link>
       </div>
     );
@@ -115,7 +124,7 @@ function CheckoutInner() {
           </div>
 
           {/* Progress Steps */}
-          <div className="flex items-center gap-2 mb-12">
+          <div className="flex flex-wrap items-center gap-2 mb-12">
             {STEPS.map((label, i) => (
               <div key={label} className="flex items-center gap-2">
                 <button
@@ -141,7 +150,7 @@ function CheckoutInner() {
           <div className="grid gap-10 lg:grid-cols-[1fr_380px]">
 
             {/* ── Left Panel ── */}
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onSubmit} className="order-2 lg:order-1">
 
               {/* Step 0: Trip Details */}
               {step === 0 && (
@@ -156,9 +165,9 @@ function CheckoutInner() {
                         <button type="button" onClick={() => setTravelers(Math.max(1, travelers - 1))}
                           className="h-9 w-9 rounded-full border border-grey-line flex items-center justify-center text-charcoal hover:border-gold hover:text-gold transition">−</button>
                         <span className="font-display text-2xl text-charcoal w-8 text-center">{travelers}</span>
-                        <button type="button" onClick={() => setTravelers(Math.min(pkg.max_travelers, travelers + 1))}
+                         <button type="button" onClick={() => setTravelers(Math.min(pkg?.max_travelers ?? vehicle?.capacity ?? 10, travelers + 1))}
                           className="h-9 w-9 rounded-full border border-grey-line flex items-center justify-center text-charcoal hover:border-gold hover:text-gold transition">+</button>
-                        <span className="text-xs text-grey-soft">max {pkg.max_travelers}</span>
+                        <span className="text-xs text-grey-soft">max {pkg?.max_travelers ?? vehicle?.capacity ?? 10}</span>
                       </div>
                     </label>
 
@@ -185,7 +194,7 @@ function CheckoutInner() {
                       onChange={(e) => setDuration(e.target.value)}
                       className="w-full bg-beige/50 rounded-xl px-3 py-2.5 text-sm text-charcoal focus:outline-none focus:ring-2 focus:ring-gold/30"
                     >
-                      <option value="any">Standard ({pkg.duration_days} days as packaged)</option>
+                       <option value="any">Standard ({pkg ? `${pkg.duration_days} days` : `${daysParam} days`})</option>
                       <option value="short">Shorter (3–6 days)</option>
                       <option value="extended">Extended (add 2–3 days)</option>
                     </select>
@@ -312,18 +321,18 @@ function CheckoutInner() {
 
                   {/* Summary rows */}
                   {[
-                    { icon: MapPin, label: "Package", value: pkg.title },
+                     { icon: MapPin, label: pkg ? "Package" : "Vehicle", value: pkg ? pkg.title : vehicle?.name },
                     { icon: Calendar, label: "Travel Date", value: new Date(date).toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" }) },
                     { icon: Users, label: "Travelers", value: `${travelers} ${travelers === 1 ? "person" : "people"}` },
                     { icon: Mail, label: "Contact", value: email },
                     { icon: Phone, label: "Phone", value: phone || "—" },
                   ].map(({ icon: Icon, label, value }) => (
-                    <div key={label} className="flex items-start gap-4 py-3 border-b border-grey-line last:border-0">
-                      <Icon size={16} className="text-gold-dark mt-0.5 shrink-0" />
-                      <div className="flex-1 flex justify-between gap-4">
+                    <div key={label} className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-2 sm:gap-4 py-3 border-b border-grey-line last:border-0">
+                      <div className="flex items-start gap-2">
+                        <Icon size={16} className="text-gold-dark mt-0.5 shrink-0" />
                         <span className="text-sm text-grey-soft">{label}</span>
-                        <span className="text-sm font-medium text-charcoal text-right">{value}</span>
                       </div>
+                      <span className="text-sm font-medium text-charcoal text-left sm:text-right break-words">{value}</span>
                     </div>
                   ))}
 
@@ -336,7 +345,7 @@ function CheckoutInner() {
                   {/* Payment Option Selection */}
                   <div className="bg-beige/30 rounded-xl p-4 space-y-3 border border-beige">
                     <div className="eyebrow !text-grey-soft text-[10px]">Payment Option</div>
-                    <div className="flex gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
                       <button
                         type="button"
                         onClick={() => setPaymentOption("deposit")}
@@ -362,7 +371,7 @@ function CheckoutInner() {
                     </div>
                   </div>
 
-                  <div className="bg-charcoal rounded-xl p-5 flex items-center justify-between">
+                  <div className="bg-charcoal rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
                       <div className="text-white/60 text-xs font-medium uppercase tracking-wide">
                         {paymentOption === "deposit" ? "Deposit Due Now" : "Total Amount Due"}
@@ -379,15 +388,15 @@ function CheckoutInner() {
                     <CreditCard size={32} className="text-gold/60" />
                   </div>
 
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <button type="button" onClick={() => setStep(1)}
-                      className="flex-1 border border-grey-line rounded-xl py-3 text-sm text-charcoal hover:border-gold transition">
+                      className="flex-1 border border-grey-line rounded-xl py-3 text-sm text-charcoal hover:border-gold transition order-2 sm:order-1">
                       Back
                     </button>
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="btn-gold flex-[2] justify-center disabled:opacity-60"
+                      className="btn-gold flex-[2] justify-center disabled:opacity-60 order-1 sm:order-2"
                     >
                       {submitting
                         ? <><Loader2 size={16} className="animate-spin" /> Processing…</>
@@ -395,7 +404,7 @@ function CheckoutInner() {
                     </button>
                   </div>
 
-                  <div className="flex items-center justify-center gap-6 pt-2 text-[10px] eyebrow !text-grey-soft">
+                  <div className="flex flex-wrap items-center justify-center gap-4 pt-2 text-[10px] eyebrow !text-grey-soft">
                     <span className="flex items-center gap-1"><Shield size={12} /> SSL Secured</span>
                     <span className="flex items-center gap-1"><Lock size={12} /> Data Encrypted</span>
                     <span className="flex items-center gap-1"><Check size={12} /> Instant Confirmation</span>
@@ -405,39 +414,41 @@ function CheckoutInner() {
             </form>
 
             {/* ── Right: Order Summary ── */}
-            <aside className="space-y-6">
-              {/* Package card */}
+            <aside className="space-y-6 order-1 lg:order-2">
+              {/* Package/Vehicle card */}
               <div className="card-luxe overflow-hidden">
                 <div className="relative h-44">
                   <Image
-                    src={packageImage(pkg.slug)}
-                    alt={pkg.title}
+                    src={vehicle ? vehicle.image : packageImage(pkg?.slug ?? "")}
+                    alt={vehicle ? vehicle.name : pkg?.title ?? ""}
                     fill
                     className="object-cover"
                     sizes="380px"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <div className="eyebrow !text-gold-light !text-[10px]">{pkg.duration_days} Days · {pkg.destinations.slice(0, 2).join(" · ")}</div>
-                    <div className="font-display text-2xl mt-0.5">{pkg.title}</div>
+                    <div className="eyebrow !text-gold-light !text-[10px]">
+                      {vehicle ? `${daysParam} Days` : `${pkg?.duration_days ?? ""} Days · ${pkg?.destinations.slice(0, 2).join(" · ") ?? ""}`}
+                    </div>
+                    <div className="font-display text-2xl mt-0.5">{vehicle ? vehicle.name : pkg?.title ?? ""}</div>
                   </div>
                 </div>
 
                 <div className="p-5 space-y-3">
                   <div className="flex items-center gap-1 text-gold">
-                    {Array.from({ length: pkg.hotel_stars }).map((_, i) => (
+                    {pkg && Array.from({ length: pkg.hotel_stars }).map((_, i) => (
                       <Star key={i} size={12} fill="currentColor" strokeWidth={0} />
                     ))}
                   </div>
 
                   <div className="space-y-2 pt-2 border-t border-grey-line">
                     <div className="flex justify-between text-sm">
-                      <span className="text-grey-soft">Price per person</span>
-                      <span className="text-charcoal font-medium">${Number(pkg.price_usd).toLocaleString()}</span>
+                      <span className="text-grey-soft">{pkg ? "Price per person" : "Price per day"}</span>
+                      <span className="text-charcoal font-medium">${pkg ? Number(pkg.price_usd).toLocaleString() : vehicle?.price_per_day}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-grey-soft">Travelers</span>
-                      <span className="text-charcoal font-medium">× {travelers}</span>
+                      <span className="text-grey-soft">{pkg ? "Travelers" : "Days"}</span>
+                      <span className="text-charcoal font-medium">× {pkg ? travelers : daysParam}</span>
                     </div>
                     <div className="flex justify-between pt-2 border-t border-grey-line">
                       <span className="font-medium text-charcoal">Total</span>
@@ -449,9 +460,9 @@ function CheckoutInner() {
 
               {/* What's included */}
               <div className="card-luxe p-5">
-                <div className="eyebrow mb-3">What's Included</div>
+                <div className="eyebrow mb-3">{pkg ? "What's Included" : "Key Features"}</div>
                 <ul className="space-y-2">
-                  {pkg.inclusions.slice(0, 5).map((inc) => (
+                  {(pkg ? pkg.inclusions : vehicle?.features ?? []).slice(0, 5).map((inc) => (
                     <li key={inc} className="flex items-start gap-2 text-sm text-charcoal">
                       <Check size={14} className="text-gold mt-0.5 shrink-0" />
                       {inc}

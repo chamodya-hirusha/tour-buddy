@@ -92,7 +92,7 @@ export default function PackageDetailPage() {
             {/* ── Left Column ── */}
             <div>
               {/* Hero Image */}
-              <div className="rounded-2xl overflow-hidden shadow-card" style={{ position: "relative", height: "480px" }}>
+              <div className="relative h-[300px] sm:h-[400px] md:h-[480px] rounded-2xl overflow-hidden shadow-card">
                 <Image
                   src={packageImage(pkg.slug)}
                   alt={pkg.title}
@@ -132,7 +132,7 @@ export default function PackageDetailPage() {
                 )}
 
                 {/* Quick inclusions strip */}
-                <div className="mt-5 flex items-center gap-5 text-[11px] text-grey-soft border-y border-grey-line py-3">
+                <div className="mt-5 flex flex-wrap items-center gap-5 text-[11px] text-grey-soft border-y border-grey-line py-3">
                   {[
                     { Icon: Car, label: "Private Vehicle" },
                     { Icon: Hotel, label: `${pkg.hotel_stars}★ Hotels` },
@@ -272,7 +272,7 @@ export default function PackageDetailPage() {
                 </label>
 
                 {/* Total */}
-                <div className="bg-charcoal rounded-xl p-4 flex items-end justify-between">
+                <div className="bg-charcoal rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3">
                   <div>
                     <div className="text-white/50 text-[10px] uppercase tracking-wide">Total</div>
                     <div className="font-display text-3xl text-gold leading-none mt-1">
@@ -282,7 +282,7 @@ export default function PackageDetailPage() {
                       30% deposit · ${deposit.toLocaleString(undefined, { maximumFractionDigits: 0 })} USD
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-left sm:text-right">
                     <div className="text-white/40 text-xs">{travelers} × ${Number(pkg.price_usd).toLocaleString()}</div>
                   </div>
                 </div>
@@ -306,7 +306,7 @@ export default function PackageDetailPage() {
                 </Link>
 
                 {/* Trust strip */}
-                <div className="flex items-center justify-around pt-1 text-[9px] eyebrow !text-grey-soft">
+                <div className="flex flex-wrap items-center justify-around pt-1 text-[9px] eyebrow !text-grey-soft gap-2">
                   <span className="flex items-center gap-1"><Shield size={11} /> Secure</span>
                   <span className="flex items-center gap-1"><Lock size={11} /> Encrypted</span>
                   <span className="flex items-center gap-1"><Phone size={11} /> 24/7 Support</span>

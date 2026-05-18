@@ -65,7 +65,7 @@ export function Hero() {
         onSubmit={onSearch}
         className="absolute bottom-0 inset-x-0 z-10 px-4 sm:px-6 pb-0 sm:pb-6 fade-up delay-500"
       >
-        <div className="mx-auto max-w-5xl bg-white/92 backdrop-blur-xl rounded-t-2xl sm:rounded-2xl shadow-modal border border-white/40 p-3 sm:p-4 grid grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3">
+        <div className="mx-auto max-w-5xl bg-white/92 backdrop-blur-xl rounded-t-2xl sm:rounded-2xl shadow-modal border border-white/40 p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3">
           <Field icon={MapPin} label="Destination">
             <select
               value={destination}

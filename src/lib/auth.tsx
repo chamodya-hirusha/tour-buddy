@@ -1,6 +1,15 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+
+type User = {
+  id: string;
+  email: string;
+  user_metadata: { 
+    full_name?: string;
+    phone?: string;
+  };
+};
+
+type Session = null;
 
 interface AuthState {
   user: User | null;
@@ -24,25 +33,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, s) => {
-      setSession(s);
-      setLoading(false);
-    });
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-    return () => subscription.unsubscribe();
+    // Supabase disabled for demo
+    setLoading(false);
   }, []);
 
   return (
     <AuthCtx.Provider
       value={{
-        user: session?.user ?? mockUser,
-        session,
+        user: mockUser,
+        session: null,
         loading,
         signOut: async () => {
-          await supabase.auth.signOut();
           setMockUser(null);
         },
         setMockUser,

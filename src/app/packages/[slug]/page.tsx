@@ -15,7 +15,6 @@ import { Footer } from "@/components/site/Footer";
 import { fetchPackageBySlug } from "@/lib/api";
 import { packageImage } from "@/lib/packages";
 import { useAuth } from "@/lib/auth";
-import { supabase } from "@/integrations/supabase/client";
 
 export default function PackageDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -65,24 +64,12 @@ export default function PackageDetailPage() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("bookings").insert({
-      user_id: user.id,
-      package_id: pkg.id,
-      travel_date: date,
-      num_travelers: travelers,
-      full_name: user.user_metadata?.full_name || user.email || "Guest",
-      email: user.email!,
-      phone: user.user_metadata?.phone || "",
-      special_notes: notes || null,
-      total_usd: total,
-    });
-    setSubmitting(false);
-    if (error) {
-      toast.error("Could not create booking", { description: error.message });
-      return;
-    }
-    toast.success("Booking confirmed! Check your dashboard.");
-    router.push("/dashboard");
+    // Supabase disabled for demo
+    setTimeout(() => {
+      setSubmitting(false);
+      toast.success("Booking confirmed! Check your dashboard. (Demo)");
+      router.push("/dashboard");
+    }, 1000);
   };
 
   return (

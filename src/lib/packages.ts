@@ -4,7 +4,7 @@ import cultural from "@/assets/pkg-cultural.jpg";
 import hero from "@/assets/hero-sigiriya.jpg";
 
 // Map seeded slugs to bundled assets
-export const PACKAGE_IMAGES: Record<string, string> = {
+export const PACKAGE_IMAGES: Record<string, typeof hero> = {
   "golden-triangle-classic": cultural,
   "southern-shores-escape": southern,
   "hill-country-retreat": hills,

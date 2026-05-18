@@ -15,7 +15,6 @@ import { Footer } from "@/components/site/Footer";
 import { fetchPackageBySlug } from "@/lib/api";
 import { packageImage } from "@/lib/packages";
 import { useAuth } from "@/lib/auth";
-import { supabase } from "@/integrations/supabase/client";
 
 /* ─────────── Steps ─────────── */
 const STEPS = ["Trip Details", "Your Info", "Confirm"] as const;
@@ -75,25 +74,12 @@ function CheckoutInner() {
       ? `${notes}\n(Selected Payment: ${paymentOption === "deposit" ? "30% Deposit" : "Full Payment"})`
       : `Selected Payment: ${paymentOption === "deposit" ? "30% Deposit" : "Full Payment"}`;
 
-    const { error } = await supabase.from("bookings").insert({
-      user_id: user.id,
-      package_id: pkg.id,
-      travel_date: date,
-      num_travelers: travelers,
-      full_name: fullName,
-      email,
-      phone,
-      special_notes: formattedNotes,
-      total_usd: total,
-    });
-    setSubmitting(false);
-
-    if (error) {
-      toast.error("Booking failed", { description: error.message });
-      return;
-    }
-    toast.success("Booking confirmed! 🎉 Check your dashboard.");
-    router.push("/dashboard");
+    // Supabase disabled for demo
+    setTimeout(() => {
+      setSubmitting(false);
+      toast.success("Booking confirmed! 🎉 Check your dashboard. (Demo)");
+      router.push("/dashboard");
+    }, 1000);
   };
 
   if (authLoading || isLoading) {

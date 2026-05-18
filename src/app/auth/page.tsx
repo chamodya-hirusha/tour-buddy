@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, Lock, Mail, User, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import type { Metadata } from "next";
 
@@ -36,41 +35,25 @@ export default function AuthPage() {
     e.preventDefault();
     setLoading(true);
     if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
-          data: { full_name: name },
-        },
-      });
-      if (error) toast.error(error.message);
-      else toast.success("Check your email to verify your account!");
+      toast.error("Sign up is disabled for the demo.");
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        // Allow mock admin login for testing
-        if (email === "admin@gmail.com" && password === "admin123") {
-          setMockUser({
-            id: "admin-id",
-            email: "admin@gmail.com",
-            user_metadata: { full_name: "Admin" },
-          } as any);
-          toast.success("Logged in as Admin (Demo)");
-        } else {
-          toast.error(error.message);
-        }
+      // Demo login flow
+      if (email === "demouser@gmail.com" && password === "user123") {
+        setMockUser({
+          id: "demo-id",
+          email: "demouser@gmail.com",
+          user_metadata: { full_name: "Demo User" },
+        } as any);
+        toast.success("Logged in as Demo User");
+      } else {
+        toast.error("Invalid credentials. Use demouser@gmail.com / user123");
       }
     }
     setLoading(false);
   };
 
   const onGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/dashboard` },
-    });
-    if (error) toast.error("Google sign-in failed");
+    toast.error("Google sign-in is disabled for the demo.");
   };
 
   return (

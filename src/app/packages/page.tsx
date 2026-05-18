@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Calendar, Users, SlidersHorizontal, X, Loader2 } from "lucide-react";
@@ -19,6 +19,12 @@ function PackagesInner() {
   const [duration, setDuration] = useState(params.get("duration") ?? "any");
   const [travelers, setTravelers] = useState(Number(params.get("travelers") ?? 2));
   const [date, setDate] = useState(params.get("date") ?? "");
+
+  // Sync state with URL params when they change
+  useEffect(() => {
+    const dest = params.get("destination");
+    if (dest) setDestination(dest);
+  }, [params]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["packages"],

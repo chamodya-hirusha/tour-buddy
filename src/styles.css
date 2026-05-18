@@ -1,0 +1,200 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@400;500;600;700&family=Cinzel:wght@400;500;600&display=swap");
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+
+  --font-display: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-accent: "Cinzel", ui-serif, Georgia, serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-ivory: var(--ivory);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-beige: var(--beige);
+  --color-forest: var(--forest);
+  --color-forest-light: var(--forest-light);
+  --color-charcoal: var(--charcoal);
+  --color-grey-soft: var(--grey-soft);
+  --color-grey-line: var(--grey-line);
+
+  --shadow-card: 0 4px 24px rgba(28, 28, 30, 0.07);
+  --shadow-hover: 0 18px 50px rgba(28, 28, 30, 0.14);
+  --shadow-modal: 0 24px 80px rgba(28, 28, 30, 0.18);
+  --shadow-gold: 0 10px 40px rgba(212, 175, 55, 0.35);
+
+  --gradient-hero-overlay: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.2) 0%,
+    rgba(0, 0, 0, 0.15) 40%,
+    rgba(0, 0, 0, 0.65) 100%
+  );
+  --gradient-gold: linear-gradient(135deg, #f0dc82 0%, #d4af37 50%, #a8880e 100%);
+  --gradient-gold-soft: linear-gradient(135deg, #f5e7a8 0%, #d4af37 100%);
+}
+
+:root {
+  /* Brand */
+  --ivory: oklch(0.985 0.012 85);
+  --gold: oklch(0.78 0.13 86);
+  --gold-light: oklch(0.88 0.11 92);
+  --gold-dark: oklch(0.62 0.13 82);
+  --beige: oklch(0.94 0.018 80);
+  --forest: oklch(0.43 0.06 150);
+  --forest-light: oklch(0.62 0.08 150);
+  --charcoal: oklch(0.20 0.005 270);
+  --grey-soft: oklch(0.52 0.008 270);
+  --grey-line: oklch(0.91 0.012 80);
+
+  /* Shadcn mapping */
+  --radius: 0.625rem;
+  --background: var(--ivory);
+  --foreground: var(--charcoal);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--charcoal);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--charcoal);
+  --primary: var(--gold);
+  --primary-foreground: var(--charcoal);
+  --secondary: var(--beige);
+  --secondary-foreground: var(--charcoal);
+  --muted: var(--beige);
+  --muted-foreground: var(--grey-soft);
+  --accent: var(--forest);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.58 0.21 27);
+  --destructive-foreground: oklch(1 0 0);
+  --border: var(--grey-line);
+  --input: var(--grey-line);
+  --ring: var(--gold);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); }
+  .font-accent { font-family: var(--font-accent); letter-spacing: 0.22em; text-transform: uppercase; }
+  .text-balance { text-wrap: balance; }
+
+  .eyebrow {
+    font-family: var(--font-accent);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+  }
+
+  .btn-gold {
+    background: var(--gradient-gold);
+    color: var(--charcoal);
+    font-weight: 600;
+    padding: 0.95rem 1.85rem;
+    border-radius: 8px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-gold::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.7s ease;
+  }
+  .btn-gold:hover { box-shadow: var(--shadow-gold); transform: translateY(-1px); }
+  .btn-gold:hover::after { transform: translateX(100%); }
+
+  .btn-ghost-light {
+    border: 1px solid rgba(255,255,255,0.7);
+    color: #fff;
+    padding: 0.9rem 1.75rem;
+    border-radius: 8px;
+    backdrop-filter: blur(8px);
+    transition: all 0.25s ease;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-ghost-light:hover { background: rgba(255,255,255,0.12); border-color: #fff; }
+
+  .gold-rule {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+
+  .card-luxe {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card-luxe:hover { box-shadow: var(--shadow-hover); transform: translateY(-4px); }
+
+  .fade-up { animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .delay-100 { animation-delay: 0.1s; }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-300 { animation-delay: 0.3s; }
+  .delay-400 { animation-delay: 0.4s; }
+  .delay-500 { animation-delay: 0.5s; }
+
+  .marquee-shadow-l {
+    background: linear-gradient(to right, var(--ivory), transparent);
+  }
+  .marquee-shadow-r {
+    background: linear-gradient(to left, var(--ivory), transparent);
+  }
+}

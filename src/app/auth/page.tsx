@@ -12,8 +12,8 @@ export default function AuthPage() {
   const router = useRouter();
   const { user, setMockUser } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("demouser@gmail.com");
+  const [password, setPassword] = useState("user123");
   const [name, setName] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -45,6 +45,14 @@ export default function AuthPage() {
           user_metadata: { full_name: "Demo User" },
         } as any);
         toast.success("Logged in as Demo User");
+      } else if (email === "admin@gmail.com" && password === "admin123") {
+        setMockUser({
+          id: "admin-id",
+          email: "admin@gmail.com",
+          user_metadata: { full_name: "Admin User" },
+        } as any);
+        toast.success("Welcome to the Command Center");
+        router.push("/admin");
       } else {
         toast.error("Invalid credentials. Use demouser@gmail.com / user123");
       }

@@ -55,7 +55,10 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-6 py-6 flex flex-col md:flex-row justify-between gap-4 text-xs text-white/40">
           <span>© {new Date().getFullYear()} Tour Buddy. All rights reserved.</span>
-          <span>Crafted with care in Sri Lanka 🌿</span>
+          <div className="flex gap-4">
+            <span>Crafted with care in Sri Lanka 🌿</span>
+            <Link href="/admin/login" className="hover:text-gold transition">Admin Login</Link>
+          </div>
         </div>
       </div>
     </footer>
